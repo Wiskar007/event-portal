@@ -22,7 +22,7 @@ include('includes/header.php'); ?>
                 </div>
               </div>
               <div class="card-body">
-                <form role="form" class="text-start" method="post" id="signin">
+                <form role="form" class="text-start" method="post" id="signin" autocomplete="off">
                   <div class="input-group input-group-outline my-3 uname">
                     <label class="form-label">Username</label>
                     <input type="text" class="form-control" id="uname" name="uname" required="required">

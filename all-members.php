@@ -7,55 +7,9 @@ include('includes/header.php')
   include('includes/sidebar.php');
   include('includes/functions.php');
 
- 
-    if(isset($_POST['submit']) && !empty($_POST)){
-
-    $mname = mysqli_real_escape_string($db, $_POST['mname']);
-    $memail = mysqli_real_escape_string($db, $_POST['memail']);
-    $designation = mysqli_real_escape_string($db, $_POST['designation']);
-    $club = mysqli_real_escape_string($db, $_POST['club']);
-    $blood_grp = mysqli_real_escape_string($db, $_POST['blood_grp']);
-    $mobile = mysqli_real_escape_string($db, $_POST['mobile']);
-    $em_contact = mysqli_real_escape_string($db, $_POST['em_contact']);
-
-    if(empty($mname) || empty($designation) ||  empty($designation) || empty($club) || empty($blood_grp) || empty($mobile) || empty($em_contact)){
-      $_SESSION['error'] = 'Please fill all fields';
-    }elseif (!filter_var($memail, FILTER_VALIDATE_EMAIL)) {
-      $_SESSION['error'] = 'Please provide valid email format';
-    }else{
-      // check email is already exist or not
-      $email_exist = fetchData('members', '*', ['memebr_email'=>$memail],$db);
-      if(empty($email_exist)){
-        $insert_data = [
-          "member_name" => $mname,
-          "club_name" => $club,
-          "blood_group" => $blood_grp,
-          "mobile_no" => $mobile,
-          "em_contact" => $em_contact,
-          "designation_id" => $designation,
-          "memebr_email"=>$memail
-          
-          ];
   
-          $tableName = 'members';
-          $insert = insertData($tableName, $insert_data ,$db);
-  
-          if ($insert !== false) {
-            $_SESSION['success'] = 'Members Inserted Successfully';
-           
-                  
-              } else {
-            $_SESSION['error'] = 'Something went wrong Please try again';
-            
-              }
-      }else{
-        $_SESSION['error'] = 'Email is already exist into system';
-      }
-          
-    }
 
-    
-  }
+
 
   ?>
   
@@ -66,191 +20,112 @@ include('includes/header.php')
     ?>
 	<div class="container-fluid py-4">
     <div class="row justify-content-center">
-    <div class="card-body px-0 pb-2">
+    <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">Members table</h6>
+              </div>
+            </div>
+            <?php 
+      $table_name = 'members';
+      $column_names = '*'; 
+      $where_condition = array(); 
+      $limit = 10; 
+      $page = isset($_GET['page']) ? $_GET['page'] : 1;
+      
+      $result = fetchDataWithPagination($table_name, $column_names, $where_condition, $limit, $page, $db);
+      // echo '<pre>';
+      // print_r($result);
+      // echo '</pre>';
+      // die();
+      if(!empty($result)){
+        $currentPage = 1; // Assume the initial current page is 1
+$totalPages = $result['total_pages']; // Assuming you have calculated total pages
+if (isset($_GET['page']) && $_GET['page'] >= 1 && $_GET['page'] <= $totalPages) {
+    $currentPage = $_GET['page']; // Update current page if it's provided in the URL
+}
+
+
+        ?>
+      
+          <div class="card-body px-0 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Author</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Function</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Employed</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Sr No</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Member Name</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Email	</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Mobile No</th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
                   <tbody>
+                    <?php
+                    $i=1;
+                  foreach($result['data'] as $row){
+  
+?>
                     <tr>
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div>
-                            <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
+                            <?=$i;?>
                           </div>
                           <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">John Michael</h6>
-                            <p class="text-xs text-secondary mb-0">john@creative-tim.com</p>
+                            <!-- <h6 class="mb-0 text-sm">John Michael</h6>
+                            <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
                           </div>
                         </div>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">Manager</p>
-                        <p class="text-xs text-secondary mb-0">Organization</p>
+                        <p class="text-xs font-weight-bold mb-0"><?=$row['member_name']?></p>
                       </td>
                       <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success">Online</span>
+                        <span class="badge badge-sm bg-gradient-success"><?=$row['email_id']?></span>
                       </td>
                       <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">23/04/18</span>
+                        <span class="text-secondary text-xs font-weight-bold"><?=$row['mobile_no']?></span>
                       </td>
-                      <td class="align-middle">
+                      <!-- <td class="align-middle">
                         <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
                           Edit
                         </a>
-                      </td>
+                      </td> -->
                     </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-3.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user2">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Alexa Liras</h6>
-                            <p class="text-xs text-secondary mb-0">alexa@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Programator</p>
-                        <p class="text-xs text-secondary mb-0">Developer</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-secondary">Offline</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">11/01/19</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          Edit
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-4.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user3">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Laurent Perrier</h6>
-                            <p class="text-xs text-secondary mb-0">laurent@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Executive</p>
-                        <p class="text-xs text-secondary mb-0">Projects</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success">Online</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">19/09/17</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          Edit
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-3.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user4">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Michael Levi</h6>
-                            <p class="text-xs text-secondary mb-0">michael@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Programator</p>
-                        <p class="text-xs text-secondary mb-0">Developer</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success">Online</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">24/12/08</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          Edit
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user5">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Richard Gran</h6>
-                            <p class="text-xs text-secondary mb-0">richard@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Manager</p>
-                        <p class="text-xs text-secondary mb-0">Executive</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-secondary">Offline</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">04/10/21</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          Edit
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-4.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user6">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Miriam Eric</h6>
-                            <p class="text-xs text-secondary mb-0">miriam@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Programator</p>
-                        <p class="text-xs text-secondary mb-0">Developer</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-secondary">Offline</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">14/09/20</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          Edit
-                        </a>
-                      </td>
-                    </tr>
+              <?php $i++;} ?>      
+                   
                   </tbody>
                 </table>
               </div>
             </div>
+            <div id="pagination-controls" class="d-flex justify-content-center mt-4">
+    <?php
+    // Previous button
+    if ($result['total_pages'] > 1 && $page > 1) {
+        echo "<a href='?page=1' class='btn btn-sm btn-primary mx-1'>&laquo; First</a>";
+        $prevPage = $page - 1;
+        echo "<a href='?page=$prevPage' class='btn btn-sm btn-primary mx-1'>&lsaquo; Previous</a>";
+    }
+
+    // Display numbered pagination controls
+    for ($i = 1; $i <= $result['total_pages']; $i++) {
+        echo "<a href='?page=$i' class='btn btn-sm btn-primary mx-1'>$i</a>";
+    }
+
+    // Next button
+    if ($result['total_pages'] > 1 && $page < $result['total_pages']) {
+        $nextPage = $page + 1;
+        echo "<a href='?page=$nextPage' class='btn btn-sm btn-primary mx-1'>Next &rsaquo;</a>";
+        echo "<a href='?page={$result['total_pages']}' class='btn btn-sm btn-primary mx-1'>Last &raquo;</a>";
+    }
+    ?>
+</div>
+
+      <?php }else{
+        echo 'no data found';
+      }
+      
+      ?>
 </div>
 
         

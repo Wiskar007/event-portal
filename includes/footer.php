@@ -58,6 +58,9 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
 <script src="assets/js/multiselect.js"></script>
+<script
+        src="https://unpkg.com/html5-qrcode">
+    </script>
 
   <script>
 
@@ -416,3 +419,32 @@ $("#etime2").prop('disabled', true).timepicker({
             console.error( error );
         });
 </script>
+<script>
+// script.js file
+
+function domReady(fn) {
+	if (
+		document.readyState === "complete" ||
+		document.readyState === "interactive"
+	) {
+		setTimeout(fn, 1000);
+	} else {
+		document.addEventListener("DOMContentLoaded", fn);
+	}
+}
+
+domReady(function () {
+
+	// If found you qr code
+	function onScanSuccess(decodeText, decodeResult) {
+		alert("You Qr is : " + decodeText, decodeResult);
+	}
+
+	let htmlscanner = new Html5QrcodeScanner(
+		"my-qr-reader",
+		{ fps: 10, qrbos: 250 }
+	);
+	htmlscanner.render(onScanSuccess);
+});
+</script>
+

@@ -26,10 +26,10 @@ error_reporting(E_ALL);
     if(empty($ename) || empty($edate) ||  empty($etime1) || empty($etime2)){
       $_SESSION['error'] = 'Please fill all fields';
     }else{
-        if (isset($_POST['designation']) && !empty($_POST['designation'])) {
-            $designations = $_POST['designation'];
-            foreach ($designations as &$designation) {
-                $designation = mysqli_real_escape_string($db, $designation);
+        if (isset($_POST['membership_type']) && !empty($_POST['membership_type'])) {
+            $membership_types = $_POST['membership_type'];
+            foreach ($membership_types as &$membership_type) {
+                $membership_type = mysqli_real_escape_string($db, $membership_type);
 
             }
             $insert_data = [
@@ -48,19 +48,19 @@ error_reporting(E_ALL);
         
                 if ($insert !== false) {
 
-                    $designationTableName = 'event_designations';
+                    $membershipTypeTableName = 'event_membership';
 
-                    foreach ($designations as $designation) {
-                        $designationInsertData = [
+                    foreach ($membership_types as $membership_type) {
+                        $membership_type_insert_data = [
                             "event_id" =>$insert,
-                            "designation_id" => $designation,
+                            "membership_type" => $membership_type,
                             // Include any other fields you want to insert
                         ];
-                        $designationInsert = insertData($designationTableName, $designationInsertData, $db);
+                        $membershipTypeInsert = insertData($membershipTypeTableName, $membership_type_insert_data, $db);
                         
-                        if ($designationInsert === false) {
+                        if ($membershipTypeInsert === false) {
                             // Handle insertion failure for individual designation
-                            $_SESSION['error'] = 'Failed to insert designation: ' . $designation;
+                            $_SESSION['error'] = 'Failed to insert designation: ' . $membership_type;
                             // You can choose to break out of the loop or continue
                         }else{
                             $_SESSION['success'] = 'Events Added Successfully';
@@ -116,7 +116,7 @@ error_reporting(E_ALL);
     <h4 class="text-center">Add New Events</h4>
         <div class="card">
             <div class="card-body">
-                <form role="form" class="text-start" method="post">
+                <form role="form" class="text-start" method="post" autocomplete="off">
                     <div class="input-group input-group-outline my-3 ">
                         <label class="form-label">Event Name</label>
                         <input type="text" class="form-control" id="ename" name="ename" required="required">
@@ -146,14 +146,14 @@ error_reporting(E_ALL);
                         <textarea name="evenue" rows="3" cols="50"></textarea>
                     </div>
                     <div class="input-group input-group-outline mb-3 ">
-                        <label class="form-label">Designation</label>
-                        <select class="form-control" multiple data-multi-select id="designation" name="designation" required="required">
+                        <label class="form-label">Membership Type</label>
+                        <select class="form-control" multiple data-multi-select id="membership_type" name="membership_type" required="required">
                             
                             <?php 
-                           $designations = fetchData('designations', '*', '',$db);
-                           if(!empty($designations)){
-                            foreach($designations as $designation){
-                                echo '<option value="'.$designation['designation_id'].'">'.$designation['designation'].'</option>';
+                           $membership_types = fetchData('membership_types', '*', '',$db);
+                           if(!empty($membership_types)){
+                            foreach($membership_types as $membership_type){
+                                echo '<option value="'.$membership_type['membership_type_id'].'">'.$membership_type['membership_type'].'</option>';
                             }
                            }
                             ?>
