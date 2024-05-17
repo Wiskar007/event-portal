@@ -154,6 +154,97 @@ function fetchData($table_name, $column_names, $where_condition, $db) {
 }
 
 
+function fetchDataWithPagination($table_name, $column_names, $where_condition, $limit, $page, $db) {
+    try {
+        // Calculate the OFFSET for pagination
+        $offset = ($page - 1) * $limit;
+
+        // Prepare the select statement
+        if ($column_names === '*') {
+            $sql = "SELECT * FROM $table_name";
+        } else {
+            $sql = "SELECT $column_names FROM $table_name";
+        }
+        
+        // Add WHERE condition if provided
+        if (!empty($where_condition)) {
+            $sql .= " WHERE ";
+            $params = [];
+            foreach ($where_condition as $column => $value) {
+                $sql .= "$column = ? AND ";
+                $params[] = $value;
+            }
+            $sql = rtrim($sql, 'AND ');
+        }
+        
+        // Count total rows (without limit and offset)
+        $countSql = "SELECT COUNT(*) as total FROM $table_name";
+        if (!empty($where_condition)) {
+            $countSql .= " WHERE ";
+            $countSql .= implode(" = ? AND ", array_keys($where_condition)) . " = ?";
+        }
+        $countStmt = $db->prepare($countSql);
+        if (!empty($where_condition)) {
+            $types = str_repeat('s', count($params));
+            $countStmt->bind_param($types, ...$params);
+        }
+        $countStmt->execute();
+        $countResult = $countStmt->get_result();
+        $total_rows = $countResult->fetch_assoc()['total'];
+        
+        // Add LIMIT and OFFSET for pagination
+        $sql .= " LIMIT ? OFFSET ?";
+        
+        $stmt = $db->prepare($sql);
+        
+        // Bind parameters if WHERE condition is provided
+        if (!empty($where_condition)) {
+            $types = str_repeat('s', count($params));
+            $stmt->bind_param($types, ...$params);
+        }
+
+        // Bind LIMIT and OFFSET parameters
+        $stmt->bind_param('ii', $limit, $offset);
+        
+        // Execute the statement
+        if (!$stmt->execute()) {
+            throw new Exception("Error executing the statement: " . $stmt->error);
+        }
+        
+        // Get the result set
+        $result = $stmt->get_result();
+        
+        // Fetch the data into an array of associative arrays
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+        
+        // Close the result set (not necessary to close the connection here)
+        $stmt->close();
+        
+        // Calculate total number of pages
+        $total_pages = ceil($total_rows / $limit);
+
+        // Return data along with pagination information
+        return array(
+            'data' => $data,
+            'total_rows' => $total_rows,
+            'total_pages' => $total_pages
+        );
+    } catch (Exception $e) {
+        // Error handling
+        echo 'Error: ' . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
