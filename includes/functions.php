@@ -103,13 +103,18 @@ function updateData($table_name, $column_name, $new_value, $db, $where_condition
 
 
 // function for fetch data from database
-function fetchData($table_name, $column_names, $where_condition, $db) {
+function fetchData($table_name, $column_names, $where_condition, $db, $join_type = null, $join_table = null, $join_condition = null) {
     try {
         // Prepare the select statement
         if ($column_names === '*') {
             $sql = "SELECT * FROM $table_name";
         } else {
             $sql = "SELECT $column_names FROM $table_name";
+        }
+        
+        // Add JOIN clause if provided
+        if ($join_type && $join_table && $join_condition) {
+            $sql .= " $join_type JOIN $join_table ON $join_condition";
         }
         
         // Add WHERE condition if provided
@@ -152,6 +157,7 @@ function fetchData($table_name, $column_names, $where_condition, $db) {
         return false;
     }
 }
+
 
 
 function fetchDataWithPagination($table_name, $column_names, $where_condition, $limit, $page, $db) {

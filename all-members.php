@@ -20,6 +20,7 @@ include('includes/header.php')
     ?>
 	<div class="container-fluid py-4">
     <div class="row justify-content-center">
+    <div class="card my-4">
     <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
                 <h6 class="text-white text-capitalize ps-3">Members table</h6>
@@ -72,8 +73,6 @@ if (isset($_GET['page']) && $_GET['page'] >= 1 && $_GET['page'] <= $totalPages) 
                             <?=$i;?>
                           </div>
                           <div class="d-flex flex-column justify-content-center">
-                            <!-- <h6 class="mb-0 text-sm">John Michael</h6>
-                            <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
                           </div>
                         </div>
                       </td>
@@ -81,7 +80,7 @@ if (isset($_GET['page']) && $_GET['page'] >= 1 && $_GET['page'] <= $totalPages) 
                         <p class="text-xs font-weight-bold mb-0"><?=$row['member_name']?></p>
                       </td>
                       <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success"><?=$row['email_id']?></span>
+                        <span class="text-xs font-weight-bold mb-0"><?=$row['email_id']?></span>
                       </td>
                       <td class="align-middle text-center">
                         <span class="text-secondary text-xs font-weight-bold"><?=$row['mobile_no']?></span>
@@ -126,6 +125,7 @@ if (isset($_GET['page']) && $_GET['page'] >= 1 && $_GET['page'] <= $totalPages) 
       }
       
       ?>
+      </div>
 </div>
 
         

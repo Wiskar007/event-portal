@@ -1,6 +1,10 @@
 <?php
 $title = 'Welcome to Lion Portal';
-include('includes/header.php'); ?>
+include('includes/header.php'); 
+if(isset($_SESSION['user_id'])){
+  header('location:dashboard.php');
+}
+?>
 <main class="main-content  mt-0">
     <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');">
       <span class="mask bg-gradient-dark opacity-6"></span>
@@ -25,11 +29,11 @@ include('includes/header.php'); ?>
                 <form role="form" class="text-start" method="post" id="signin" autocomplete="off">
                   <div class="input-group input-group-outline my-3 uname">
                     <label class="form-label">Username</label>
-                    <input type="text" class="form-control" id="uname" name="uname" required="required">
+                    <input type="text" class="form-control" id="uname" placeholder="Enter Username" name="uname" required="required">
                   </div>
                   <div class="input-group input-group-outline mb-3 password">
                     <label class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="passwprd" required="required">
+                    <input type="password" class="form-control" placeholder="Enter Password" id="password" name="passwprd" required="required">
                   </div>
                   <div class="form-check form-switch d-flex align-items-center mb-3">
                     <input class="form-check-input" type="checkbox" id="rememberMe" checked>

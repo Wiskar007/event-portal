@@ -17,8 +17,9 @@ include('includes/header.php')
     $blood_grp = mysqli_real_escape_string($db, $_POST['blood_grp']);
     $mobile = mysqli_real_escape_string($db, $_POST['mobile']);
     $em_contact = mysqli_real_escape_string($db, $_POST['em_contact']);
+    $membership_type = mysqli_real_escape_string($db, $_POST['membership_type']);
 
-    if(empty($mname) || empty($designation) ||  empty($designation) || empty($club) || empty($blood_grp) || empty($mobile) || empty($em_contact)){
+    if(empty($mname) || empty($designation) ||  empty($designation) || empty($club) || empty($blood_grp) || empty($mobile) || empty($em_contact || $membership_type)){
       $_SESSION['error'] = 'Please fill all fields';
     }elseif (!filter_var($memail, FILTER_VALIDATE_EMAIL)) {
       $_SESSION['error'] = 'Please provide valid email format';
@@ -33,7 +34,9 @@ include('includes/header.php')
           "mobile_no" => $mobile,
           "em_contact" => $em_contact,
           "designation_id" => $designation,
-          "email_id"=>$memail
+          "email_id"=>$memail,
+          "membership_type" => $membership_type,
+          "member_id" => rand(1, 100)
           
           ];
   
@@ -88,15 +91,15 @@ include('includes/header.php')
                 <form role="form" class="text-start" method="post" autocomplete="off">
                     <div class="input-group input-group-outline my-3 ">
                         <label class="form-label">Member Name</label>
-                        <input type="text" class="form-control" id="mname" name="mname" required="required">
+                        <input type="text" class="form-control" id="mname" placeholder="Enter Member name" name="mname" required="required">
                     </div>
                     <div class="input-group input-group-outline my-3 ">
                         <label class="form-label">Member Email</label>
-                        <input type="email" class="form-control" id="memail" name="memail" required="required">
+                        <input type="email" class="form-control" id="memail" placeholder="Enter email" name="memail" required="required">
                     </div>
                     <div class="input-group input-group-outline mb-3 ">
                         <label class="form-label">Designation</label>
-                        <select class="form-control" id="designation" name="designation" required="required">
+                        <select class="form-control" id="designation" name="designation" placeholder="Enter Designation" required="required">
                             <option value=''>Please Select Designation</option>
                             <?php 
                            $designations = fetchData('designations', '*', '',$db);
@@ -110,7 +113,7 @@ include('includes/header.php')
                     </div>
                     <div class="input-group input-group-outline mb-3 ">
                         <label class="form-label">Club Name</label>
-                        <select class="form-control" id="club" name="club" required="required">
+                        <select class="form-control" id="club" name="club" required="required" placeholder="Enter Club ">
                             <option value=''>Please Select Club Name</option>
                             <?php 
                            $clubs = fetchData('clubs', '*', '',$db);
@@ -122,22 +125,33 @@ include('includes/header.php')
                             ?>
                         </select>
                     </div>
+                    <div class="input-group input-group-outline mb-3 ">
+                        <label class="form-label">Membership Type</label>
+                        <select class="form-control" id="membership_type" name="membership_type" placeholder="Select membership type" required="required">
+                            <option value=''>Please Select Membership Type</option>
+                            <?php 
+                           $membership_types = fetchData('membership_types', '*', '',$db);
+                           if(!empty($membership_types)){
+                            foreach($membership_types as $membership_type){
+                                echo '<option value="'.$membership_type['membership_type_id'].'">'.$membership_type['membership_type'].'</option>';
+                            }
+                           }
+                            ?>
+                        </select>
+                    </div>
                     <div class="input-group input-group-outline my-3">
                         <label class="form-label">Blood Group</label>
-                        <input type="text" class="form-control" id="blood_grp" name="blood_grp" required="required">
+                        <input type="text" class="form-control" id="blood_grp" name="blood_grp" required="required" placeholder="Enter Blood Group">
                     </div>
                     <div class="input-group input-group-outline my-3 uname">
                         <label class="form-label">Mobile No</label>
-                        <input type="tel" class="form-control" id="mobile" name="mobile" required="required">
+                        <input type="tel" class="form-control" id="mobile" name="mobile" required="required" placeholder="Enter Mobile">
                     </div>
                     <div class="input-group input-group-outline my-3 uname">
                         <label class="form-label">Emergency Contact No</label>
-                        <input type="tel" class="form-control" id="em_contact" name="em_contact" required="required">
+                        <input type="tel" class="form-control" id="em_contact" name="em_contact" required="required" placeholder="Enter Emergency Contact">
                     </div>
-                    <!-- <div class="input-group input-group-outline my-3 uname">
-                        <label class="form-label">User Name</label>
-                        <input type="text" class="form-control" id="uname" name="uname" required="required">
-                    </div> -->
+                   
                     <div class="text-center">
                         <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2" name = "submit">Add Member</button>
                     </div>

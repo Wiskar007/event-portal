@@ -1,3 +1,31 @@
 .ck.ck-reset.ck-editor.ck-rounded-corners {
-    width: 347px;
+    width: 100%;
+}
+
+.ui-timepicker-standard {
+    z-index: 9 !important;
+}
+
+.input-group> :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+    width: 100% !important;
+}
+
+.ui-timepicker-no-scrollbar .ui-timepicker {
+    overflow-x: hidden !important;
+}
+
+.bg-border {
+    border: 6px solid grey;
+}
+
+.input-bg {
+    background: white;
+}
+
+.input-bg:focus {
+    background-color:white !important;
+}
+
+.text-area .ck.ck-reset.ck-editor.ck-rounded-corners {
+    width: 514px !important; 
 }
