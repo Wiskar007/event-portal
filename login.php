@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db_pass = $result[0]['passwd'];
             if (password_verify($password, $db_pass)) {
                 echo 1;
+                $_Session['login']='1';
+                $_SESSION['user_id'] = $result[0]['id'];
             }else{
                 echo 'Sorry your password is wrong for username '.$uname;
             }

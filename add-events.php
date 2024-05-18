@@ -1,18 +1,19 @@
-<?php 
+<?php
 $title = 'Add Events';
 include('includes/header.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ?>
+
 <body class="g-sidenav-show  bg-gray-200">
-  <?php 
+  <?php
   include('includes/sidebar.php');
   include('includes/functions.php');
 
- 
-    if(isset($_POST['submit']) && !empty($_POST)){
-       
+
+  if (isset($_POST['submit']) && !empty($_POST)) {
+
     $ename = mysqli_real_escape_string($db, $_POST['ename']);
     $edate = mysqli_real_escape_string($db, $_POST['edate']);
     $etime1 = mysqli_real_escape_string($db, $_POST['etime1']);
@@ -21,161 +22,175 @@ error_reporting(E_ALL);
     $eagenda = mysqli_real_escape_string($db, $_POST['eagenda']);
     $evenue = mysqli_real_escape_string($db, $_POST['evenue']);
 
-    
 
-    if(empty($ename) || empty($edate) ||  empty($etime1) || empty($etime2)){
+
+    if (empty($ename) || empty($edate) ||  empty($etime1) || empty($etime2)) {
       $_SESSION['error'] = 'Please fill all fields';
-    }else{
-        if (isset($_POST['membership_type']) && !empty($_POST['membership_type'])) {
-            $membership_types = $_POST['membership_type'];
-            foreach ($membership_types as &$membership_type) {
-                $membership_type = mysqli_real_escape_string($db, $membership_type);
-
-            }
-            $insert_data = [
-                "event_name" =>  $ename,
-                "event_date" => $edate,
-                "event_start_time" => $etime1,
-                "event_end_time" => $etime2,
-                "event_venue" => $evenue,
-                "event_details" => $edetails,
-                "event_agenda"=>$eagenda
-                
-                ];
-        
-                $tableName = 'events';
-                $insert = insertData($tableName, $insert_data ,$db);
-        
-                if ($insert !== false) {
-
-                    $membershipTypeTableName = 'event_membership';
-
-                    foreach ($membership_types as $membership_type) {
-                        $membership_type_insert_data = [
-                            "event_id" =>$insert,
-                            "membership_type" => $membership_type,
-                            // Include any other fields you want to insert
-                        ];
-                        $membershipTypeInsert = insertData($membershipTypeTableName, $membership_type_insert_data, $db);
-                        
-                        if ($membershipTypeInsert === false) {
-                            // Handle insertion failure for individual designation
-                            $_SESSION['error'] = 'Failed to insert designation: ' . $membership_type;
-                            // You can choose to break out of the loop or continue
-                        }else{
-                            $_SESSION['success'] = 'Events Added Successfully';
-                        }
-                    }
-                   
-                  
-                 
-                        
-                    } else {
-                  $_SESSION['error'] = 'Something went wrong Please try again';
-                  
-                    }
-            
-        } else {
-            // Handle the case where no designation is selected
-            $_SESSION['error'] = 'Please select at least one designation.';
-            
+    } else {
+      if (isset($_POST['membership_type']) && !empty($_POST['membership_type'])) {
+        $membership_types = $_POST['membership_type'];
+        foreach ($membership_types as &$membership_type) {
+          $membership_type = mysqli_real_escape_string($db, $membership_type);
         }
-     
-      
-          
-    }
 
-    
+        // now check event is already registered or not with enter date
+        $event_exists = fetchData('events', 'event_date', ['event_date'=>$edate],$db);
+        if(empty($event_exists)){
+
+        $insert_data = [
+          "event_name" =>  $ename,
+          "event_date" => $edate,
+          "event_start_time" => $etime1,
+          "event_end_time" => $etime2,
+          "event_venue" => $evenue,
+          "event_details" => $edetails,
+          "event_agenda" => $eagenda
+
+        ];
+
+        $tableName = 'events';
+        $insert = insertData($tableName, $insert_data, $db);
+
+        if ($insert !== false) {
+
+          $membershipTypeTableName = 'event_membership';
+
+          foreach ($membership_types as $membership_type) {
+            $membership_type_insert_data = [
+              "event_id" => $insert,
+              "membership_type" => $membership_type,
+              // Include any other fields you want to insert
+            ];
+            $membershipTypeInsert = insertData($membershipTypeTableName, $membership_type_insert_data, $db);
+
+            if ($membershipTypeInsert === false) {
+              // Handle insertion failure for individual designation
+              $_SESSION['error'] = 'Failed to insert designation: ' . $membership_type;
+              // You can choose to break out of the loop or continue
+            } else {
+              $_SESSION['success'] = 'Events Added Successfully';
+            }
+          }
+        } else {
+          $_SESSION['error'] = 'Something went wrong Please try again';
+        }
+
+      }else{
+        $_SESSION['error'] = 'Sorry the event is already exist for selected date please choose other date';
+      }
+      } else {
+        // Handle the case where no designation is selected
+        $_SESSION['error'] = 'Please select at least one designation.';
+      }
+    }
   }
 
   ?>
-  
-  
+
+
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <?php
-    include('includes/nav.php'); 
+    include('includes/nav.php');
     ?>
-	<div class="container-fluid py-4">
-    <div class="row justify-content-center">
-    <div class="col-lg-4 col-md-6">
-    <?php if(isset($_SESSION['error'])){
-                echo " <div class='alert alert-danger mb-5' role='alert'>
-                ".$_SESSION['error']."
+    <div class="container-fluid py-4">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <?php if (isset($_SESSION['error'])) {
+            echo " <div class='alert alert-danger mb-5' role='alert'>
+                " . $_SESSION['error'] . "
                 </div>";
-            }
-            unset($_SESSION['error']);
-         ?>
+          }
+          unset($_SESSION['error']);
+          ?>
 
- <?php if(isset($_SESSION['success'])){
-                echo " <div class='alert alert-success mb-5' role='alert'>
-                ".$_SESSION['success']."
+          <?php if (isset($_SESSION['success'])) {
+            echo " <div class='alert alert-success mb-5' role='alert'>
+                " . $_SESSION['success'] . "
                 </div>";
-            }
-            unset($_SESSION['success']);
-         ?> 
-    <h4 class="text-center">Add New Events</h4>
-        <div class="card">
+          }
+          unset($_SESSION['success']);
+          ?>
+          <h4 class="text-center">Add New Events</h4>
+          <div class="card">
             <div class="card-body">
-                <form role="form" class="text-start" method="post" autocomplete="off">
+              <form role="form" class="text-start" method="post" autocomplete="off">
+                <div class="row">
+                  <div class="col-lg-6">
                     <div class="input-group input-group-outline my-3 ">
-                        <label class="form-label">Event Name</label>
-                        <input type="text" class="form-control" id="ename" name="ename" required="required">
+                      <label class="form-label">Event Name</label>
+                      <input type="text" class="form-control" id="ename" name="ename"  placeholder="Enter Event name" required="required">
                     </div>
+                  </div>
+                  <div class="col-lg-6">
                     <div class="input-group input-group-outline my-3 ">
-                        <label class="form-label">Event Date</label>
-                        <input type="text" class="form-control" id="edate" name="edate" required="required">
+                      <label class="form-label">Event Date</label>
+                      <input type="text" class="form-control" placeholder="Event Date" id="edate" name="edate" required="required">
                     </div>
+                  </div>
+                  <div class="col-lg-6">
                     <div class="input-group input-group-outline my-3 ">
-                        <label class="form-label">Event Start Time</label>
-                        <input type="text" class="form-control" id="etime1" name="etime1" required="required">
+                      <label class="form-label">Event Start Time</label>
+                      <input type="text" class="form-control" id="etime1" placeholder="Enter Start Time" name="etime1" required="required">
                     </div>
+                  </div>
+                  <div class="col-lg-6">
                     <div class="input-group input-group-outline my-3 ">
-                        <label class="form-label">Event End Time Date</label>
-                        <input type="text" class="form-control" id="etime2" name="etime2" required="required">
+                      <label class="form-label">Event End Time Date</label>
+                      <input type="text" class="form-control" placeholder="End Time" id="etime2" name="etime2" required="required">
                     </div>
+                  </div>
+                  <div class="col-lg-6">
                     <div class="input-group input-group-outline mb-3 ">
-                        <label class="form-label">Event Details</label>
-                        <textarea name="edetails" id="edetails" placeholder="Enter your event details here..."></textarea>
+                      <label class="form-label">Event Details</label>
+                      <textarea name="edetails"  id="edetails" placeholder="Enter your event details here..." class="form-control"></textarea>
                     </div>
+                  </div>
+                  <div class="col-lg-6">
                     <div class="input-group input-group-outline mb-3 ">
-                        <label class="form-label">Event Agenda</label>
-                        <textarea name="eagenda" id="eagenda" placeholder="Enter your agenda here..."></textarea>
+                      <label class="form-label">Event Agenda</label>
+                      <textarea name="eagenda"  id="eagenda" placeholder="Enter your agenda here..."></textarea>
                     </div>
+                  </div>
+                  <div class="col-lg-6">
                     <div class="input-group input-group-outline my-3">
-                        <label class="form-label">Event Venue</label>
-                        <textarea name="evenue" rows="3" cols="50"></textarea>
+                      <label class="form-label">Event Venue</label>
+                      <textarea name="evenue" placeholder="Event Venue" rows="3" cols="50"  class="form-control"></textarea>
                     </div>
+                  </div>
+                  <div class="col-lg-6">
                     <div class="input-group input-group-outline mb-3 ">
-                        <label class="form-label">Membership Type</label>
-                        <select class="form-control" multiple data-multi-select id="membership_type" name="membership_type" required="required">
-                            
-                            <?php 
-                           $membership_types = fetchData('membership_types', '*', '',$db);
-                           if(!empty($membership_types)){
-                            foreach($membership_types as $membership_type){
-                                echo '<option value="'.$membership_type['membership_type_id'].'">'.$membership_type['membership_type'].'</option>';
-                            }
-                           }
-                            ?>
-                        </select>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2" name = "submit">Add Event</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                      <label class="form-label">Membership Type</label>
+                      <select class="form-control" placeholder="Select Designation" multiple data-multi-select id="membership_type" name="membership_type" required="required">
 
-        
-       
-        
+                        <?php
+                        $membership_types = fetchData('membership_types', '*', '', $db);
+                        if (!empty($membership_types)) {
+                          foreach ($membership_types as $membership_type) {
+                            echo '<option value="' . $membership_type['membership_type_id'] . '">' . $membership_type['membership_type'] . '</option>';
+                          }
+                        }
+                        ?>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2" name="submit">Add Event</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <?php
-      include('includes/footer.php');
-      ?>
+
+
+
+
+    </div>
+
+    <?php
+    include('includes/footer.php');
+    ?>
     </div>
   </main>
   <div class="fixed-plugin">

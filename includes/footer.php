@@ -96,17 +96,25 @@
             },
                 success:function(result){
                     if(result==='1'){
-                      alert('hee')
+                     window.location.href='dashboard.php';
                     }else{
                         var dynamicServerErrorField = $('<div class="alert alert-danger mb-5" role="alert">'+result+'</div>');
                         $("#result").html(dynamicServerErrorField)
-                    
+                        
                     }
+
+                    $('#signin')[0].reset()
                 },
                 error: function(xhr, status, error) {
                 // Handle error here
                 alert("Error occurred: " + error);
+
+            $('#signin')[0].reset()
+
     }
+
+
+    
 
             });
         }
@@ -380,9 +388,9 @@ $(document).ready(function () {
         $("#etime1").timepicker({
     timeFormat: 'HH:mm:ss', // 24-hour format
     interval: 15, // Interval between each time option (in minutes)
-    minTime: '10:00', // Start time (10:00 AM)
-    maxTime: '19:00', // End time (7:00 PM)
-    startTime: '10:00', // Start time for the dropdown
+    minTime: '07:00', // Start time (10:00 AM)
+    maxTime: '23:30', // End time (7:00 PM)
+    startTime: '07:00', // Start time for the dropdown
     change: function(time) {
       var selectedTime1 = $(this).timepicker('getTime');
         var nextTime = new Date(selectedTime1.getTime() + 15 * 60000); 
@@ -394,9 +402,9 @@ $(document).ready(function () {
 $("#etime2").prop('disabled', true).timepicker({
         timeFormat: 'HH:mm:ss', // 24-hour format
         interval: 15,
-        minTime: '10:00', // Start time (10:00 AM)
-    maxTime: '19:00', // End time (7:00 PM)
-    startTime: '10:00',
+        minTime: '07:00', // Start time (10:00 AM)
+    maxTime: '23:30', // End time (7:00 PM)
+    startTime: '07:00',
     });
         
     });
@@ -419,32 +427,5 @@ $("#etime2").prop('disabled', true).timepicker({
             console.error( error );
         });
 </script>
-<script>
-// script.js file
 
-function domReady(fn) {
-	if (
-		document.readyState === "complete" ||
-		document.readyState === "interactive"
-	) {
-		setTimeout(fn, 1000);
-	} else {
-		document.addEventListener("DOMContentLoaded", fn);
-	}
-}
-
-domReady(function () {
-
-	// If found you qr code
-	function onScanSuccess(decodeText, decodeResult) {
-		alert("You Qr is : " + decodeText, decodeResult);
-	}
-
-	let htmlscanner = new Html5QrcodeScanner(
-		"my-qr-reader",
-		{ fps: 10, qrbos: 250 }
-	);
-	htmlscanner.render(onScanSuccess);
-});
-</script>
 

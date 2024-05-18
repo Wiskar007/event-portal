@@ -1,5 +1,5 @@
 <?php 
-$title = 'Add Member';
+$title = 'Event List';
 include('includes/header.php')
 ?>
 <body class="g-sidenav-show  bg-gray-200">
@@ -7,98 +7,105 @@ include('includes/header.php')
   include('includes/sidebar.php');
   include('includes/functions.php');
 
- 
-    
+  
+
+
 
   ?>
   
-  <style>
-    .section {
-    background-color: #ffffff;
-    padding: 50px 30px;
-    border: 1.5px solid #b2b2b2;
-    border-radius: 0.25em;
-    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.25);
-}
- 
-#my-qr-reader {
-    padding: 20px !important;
-    border: 1.5px solid #b2b2b2 !important;
-    border-radius: 8px;
-}
- 
-#my-qr-reader img[alt="Info icon"] {
-    display: none;
-}
- 
-#my-qr-reader img[alt="Camera based scan"] {
-    width: 100px !important;
-    height: 100px !important;
-}
- 
-button {
-    padding: 10px 20px;
-    border: 1px solid #b2b2b2;
-    outline: none;
-    border-radius: 0.25em;
-    color: white;
-    font-size: 15px;
-    cursor: pointer;
-    margin-top: 15px;
-    margin-bottom: 10px;
-    background-color: #008000ad;
-    transition: 0.3s background-color;
-}
- 
-button:hover {
-    background-color: #008000;
-}
- 
-#html5-qrcode-anchor-scan-type-change {
-    text-decoration: none !important;
-    color: #1d9bf0;
-}
- 
-video {
-    width: 100% !important;
-    border: 1px solid #b2b2b2 !important;
-    border-radius: 0.25em;
-}
-  </style>
+  
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <?php
     include('includes/nav.php'); 
     ?>
 	<div class="container-fluid py-4">
     <div class="row justify-content-center">
-    <div class="col-lg-4 col-md-6">
-    <?php if(isset($_SESSION['error'])){
-                echo " <div class='alert alert-danger mb-5' role='alert'>
-                ".$_SESSION['error']."
-                </div>";
-            }
-            unset($_SESSION['error']);
-         ?>
-
- <?php if(isset($_SESSION['success'])){
-                echo " <div class='alert alert-success mb-5' role='alert'>
-                ".$_SESSION['success']."
-                </div>";
-            }
-            unset($_SESSION['success']);
-         ?> 
+    <div class="card my-4">
+    <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">Event Table</h6>
+              </div>
+            </div>
+            <?php 
+            $current_date = date('Y-m-d');
+            $table_name = 'events';
+            $column_names = '*'; 
+            $where_condition = array('event_date'=>$current_date); 
+      
+      
+      $result = fetchData($table_name, $column_names, $where_condition,$db);
+      // echo '<pre>';
+      // print_r($result);
+      // echo '</pre>';
+      // die();
+      if(!empty($result)){
         
-    <h4 class="text-center">Add New Members</h4>
-        <div class="card">
-            <div class="card-body">
-            <h1>Scan QR Codes</h1>
-        <div class="section">
-            <div id="my-qr-reader">
+
+
+        ?>
+      
+          <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Sr No</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Event Name</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Event Date	</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Event Start On</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                    $i=1;
+                  foreach($result as $row){
+  
+?>
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <?=$i;?>
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <!-- <h6 class="mb-0 text-sm">John Michael</h6>
+                            <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0"><?=ucfirst($row['event_name'])?></p>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="text-xs font-weight-bold mb-0"><?=date('j M y',strtotime($row['event_date']))?></span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-secondary text-xs font-weight-bold"><?=date('g:i A', strtotime($row['event_start_time']))?></span>
+                      </td>
+                       <td class="align-middle text-center">
+                       <a href="event-view.php?event_id=<?= $row['event_id'] ?>&event_date=<?=$row['event_date']?>" class="text-secondary font-weight-bold text-xs">                          Edit
+                        </a> |
+                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs">
+                          Delete
+                        </a>
+                      </td>
+                      
+                    </tr>
+              <?php $i++;} ?>      
+                   
+                  </tbody>
+                </table>
+              </div>
             </div>
-        </div>
-            </div>
-        </div>
-    </div>
+           
+
+      <?php }else{
+        echo 'no data found';
+      }
+      
+      ?>
+      </div>
 </div>
 
         
