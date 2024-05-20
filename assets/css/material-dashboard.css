@@ -5020,6 +5020,7 @@ fieldset:disabled .btn {
   .navbar-expand-lg .navbar-collapse {
     display: flex !important;
     flex-basis: auto;
+    justify-content: end;
   }
 
   .navbar-expand-lg .navbar-toggler {
